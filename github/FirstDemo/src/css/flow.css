@@ -1,0 +1,115 @@
+/*.flow_record {
+  max-width: 100%;
+  box-sizing: border-box;
+  border-bottom: 10px solid #f9f9f9;
+  overflow-x: hidden;
+}*/
+.flow_record{
+  max-width: 100%;
+  box-sizing: border-box;
+  border-bottom: 10px solid #f9f9f9;
+  overflow-x: hidden;
+  margin-top: 64px;
+}
+
+.flow_top{
+  margin-top:0 !important;
+}
+
+.year_flow,
+.month_flow {
+  width: 100%;
+  height: 70px;
+  box-sizing: content-box;
+  background-color: #fff;
+}
+
+.flow_left {
+  width: 20%;
+  float: left;
+  text-align: center;
+  height: 70px;
+  line-height: 70px;
+  font-size: 1.6rem;
+}
+
+.flow_middle {
+  width: 45%;
+  float: left;
+  text-align: left;
+  height: 70px;
+  font-size: 1.4rem;
+}
+
+.flow_right {
+  width: 35%;
+  float: left;
+  text-align: right;
+  height: 70px;
+  font-size: 1.4rem;
+  padding-right: 1rem;
+  box-sizing: border-box;
+}
+
+.flow_middle p,
+.flow_right p {
+  height: 20px;
+  line-height: 20px;
+}
+
+.year_flow {
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f2f2f2;
+}
+
+.month_flow {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.flow_middle p:nth-child(1) {
+  color: #5f9190;
+}
+
+.flow_middle p:nth-child(2) {
+  color: #ff8e00;
+}
+
+.flow_middle p:nth-child(1),
+.flow_right p:nth-child(1) {
+  margin-top: 15px;
+}
+.member_outer {
+  width: 100%;
+  overflow-x: scroll;
+  background-color: #f2f2f2;
+  position: fixed;
+  top:0;
+  left: 0;
+  right: 0;
+}
+.member {
+  min-width: 100%;
+  padding: 1rem;
+  overflow-x: scroll;
+  background-color: #f2f2f2;
+  height: 64px;
+  box-sizing: border-box;
+}
+
+.member_item {
+  width: 120px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  border-radius: 20px;
+  background-color: #fff;
+  color: #000;
+  float: left;
+  margin-right: 20px;
+  font-size: 1.4rem;
+}
+
+.itemactive {
+  background-color: #ff8700 !important;
+  color: #fff !important;
+}
