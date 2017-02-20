@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>房贷计算器</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, minimal-ui" />
+  <script type="text/javascript" src="https://img2.qufaya.com/house_loan/dist/main.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://img2.qufaya.com/house_loan/dist/main.min.css">
+  <script type="text/javascript" src="https://img2.qufaya.com/house_loan/dist/gjj_entrance.min.js"></script>
+</head>
+
+<body>
+  <div class="dmask" id="mask" style="display:none">请完善信息！</div>
+  <div class="main" id="main" style="display: block;">
+    <section class="secTab listtab1" id="navMenu">
+      <div class="flexbox">
+        <a class="" href="front.html" id="syd"><span>商业贷</span></a>
+        <a class="active" href="gongjijin.html" id="gjj"><span>公积金贷</span></a>
+        <a class="" href="zhd.html" id="zhd"><span>组合贷</span></a>
+        <!-- <a class="" href="sfjs.html" id="sfjs"><span>税费计算</span></a> -->
+      </div>
+    </section>
+    <form id="calc11" name="calc11">
+      <div id="mainBody">
+        <section>
+          <div class="jsqBox">
+            <ul class="jsq-list">
+              <li>
+                <div>房款总价：</div>
+                <div>
+                  <div class="flexbox">
+                    <input type="number" class="ipt-text" value="" pattern="[0-9]*" id="in_houseprice" oninput="calculateLoanAmount()"><span>万元</span></div>
+                </div>
+              </li>
+              <li>
+                <div>首付比例：</div>
+                <div class="arr-rt" data-pencent="3" id="firstPercent">三成（0万）</div>
+                <input type="hidden" value="" id="shoufubili" />
+              </li>
+              <li>
+                <div>贷款总额：</div>
+                <div>
+                  <div class="flexbox">
+                    <input type="number" class="ipt-text" value="" date-loan="70" pattern="[0-9]*" id="in_loan" oninput="get_in_loan()"><span>万元</span></div>
+                </div>
+              </li>
+              <li>
+                <div>按揭年数：</div>
+                <div class="arr-rt" data-year="30" id="anjieyear">30年（360期）</div>
+                <input type="hidden" name="yearNum" id="yearNum" value="360" />
+              </li>
+              <li>
+                <div>利&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;率：</div>
+                <div class="arr-rt" data-rate="4.90" id="jizhunlilv">基准利率（3.25%）</div>
+                <input type="hidden" name="tureRate" id="tureRate" value="0.0325" />
+              </li>
+            </ul>
+            <div class="jsq-btn" id="btnCal">
+              <input type="button" value="开始计算">
+              <!-- onclick="compute(w_houseprice,w_firstpayment,w_mortgageyear,w_primerate,1)" -->
+            </div>
+          </div>
+          <section class="jsresults resultBox mt20" style="display: none;">
+            <div id="resultWraper">
+              <section>
+                <div class="result-t methodboxa">
+                  <div class="mTab">
+                    <div class="flexbox" id="payMethod">
+                      <a id="fixedPayment" class="active">等额本息</a>
+                      <a id="fixedBasis">等额本金</a>
+                    </div>
+                  </div>
+                  <p class="f14" id="p1">每月还款额固定，所还总利息较多，适合收入稳定者。</p>
+                  <p class="f14" id="p2" style="display: none;">每月还款额递减，所还总利息较低，前期还款额较大。</p>
+                </div>
+              </section>
+              <div class="jsresults01 cirqueBox">
+                <a id="detailLink" class="arr-rt" onclick="goDetail();">
+                  <div class="cirque">
+                    <canvas id="myChart" width="150" height="150"></canvas>
+                    <!-- <div id="pieCon1"></div> -->
+                    <div class="intro"><span class="info">月供</span> <span id="monthPay"></span></div>
+                  </div>
+                </a>
+              </div>
+              <div class="jsresults02 resultList mt20">
+                <dl>
+                  <dt><span>房款总价：</span></dt>
+                  <dd><span id="r_house"></span>万元</dd>
+                </dl>
+                <dl>
+                  <dt class="blue-i"><span>首付金额：</span></dt>
+                  <dd><span id="r_first"></span>万元</dd>
+                </dl>
+                <dl>
+                  <dt class="yellow-i"><span>贷款总额：</span></dt>
+                  <dd><span id="r_loan"></span>万元</dd>
+                </dl>
+                <dl>
+                  <dt class="pink-i"><span>支付利息：</span></dt>
+                  <dd><span id="r_accrual"></span>元</dd>
+                </dl>
+                <dl>
+                  <dt><span>利<i></i>率：</span></dt>
+                  <dd><span id="r_rate"></span>%</dd>
+                </dl>
+                <dl>
+                  <dt><span>首月月供：</span></dt>
+                  <dd><span id="r_f_money"></span>元/月</dd>
+                </dl>
+                <dl style="display: none;" id="dijian">
+                  <dt><span>每月递减：</span></dt>
+                  <dd><span id="r_m_money"></span>元/月</dd>
+                </dl>
+              </div>
+              <p class="gray-b f12 center mt20" id="cankao">以上结果仅供参考</p>
+              <div style="height:200px;"></div>
+            </div>
+          </section>
+        </section>
+        <!-- 选择首付比例 -->
+        <section id="sfRatePage" class="sfRatePageSec" style="display: none;">
+          <div class="input-rate">
+            <div class="width2">首付总额</div>
+            <div class="widthright">
+              <input type="number" class="ipt-text" value="" placeholder="请输入首付总额" id="shurushoufu" oninput="in_first()">
+              <span class="gray-8">万元</span>
+            </div>
+            <div class="btn-outer">
+              <a href="javascript:;" class="btn" id="btnFirstOk">确 定</a>
+            </div>
+          </div>
+          <div class="c-list">
+            <div class="list-t">或者选择首付比例</div>
+            <ul>
+              <li data-val="1" class="">一成</li>
+              <li data-val="2" class="">二成</li>
+              <li data-val="3" class="on">三成</li>
+              <li data-val="3.5" class="">三成五</li>
+              <li data-val="4" class="">四成</li>
+              <li data-val="5" class="">五成</li>
+              <li data-val="6" class="">六成</li>
+              <li data-val="7" class="">七成</li>
+              <li data-val="8" class="">八成</li>
+              <li data-val="9" class="">九成</li>
+            </ul>
+          </div>
+        </section>
+        <!-- 选择按揭年数 -->
+        <div class="sf-maskFixed" id="floatDiv" style="display: none;">
+          <div class="sf-bdmenu">
+            <div class="tt">
+              <div class="cancel" onclick="hideYear1()">取消</div>
+            </div>
+            <div class="con">
+              <section style="height: 202px;overflow: hidden;">
+                <ul>
+                  <li data-val="1" class="">1年（12期）</li>
+                  <li data-val="2" class="">2年（24期）</li>
+                  <li data-val="3" class="">3年（36期）</li>
+                  <li data-val="4" class="">4年（48期）</li>
+                  <li data-val="5" class="">5年（60期）</li>
+                  <li data-val="6" class="">6年（72期）</li>
+                  <li data-val="7" class="">7年（84期）</li>
+                  <li data-val="8" class="">8年（96期）</li>
+                  <li data-val="9" class="">9年（108期）</li>
+                  <li data-val="10" class="">10年（120期）</li>
+                  <li data-val="11" class="">11年（132期）</li>
+                  <li data-val="12" class="">12年（144期）</li>
+                  <li data-val="13" class="">13年（156期）</li>
+                  <li data-val="14" class="">14年（168期）</li>
+                  <li data-val="15" class="">15年（180期）</li>
+                  <li data-val="16" class="">16年（192期）</li>
+                  <li data-val="17" class="">17年（204期）</li>
+                  <li data-val="18" class="">18年（216期）</li>
+                  <li data-val="19" class="">19年（228期）</li>
+                  <li data-val="20" class="">20年（240期）</li>
+                  <li data-val="21" class="">21年（252期）</li>
+                  <li data-val="22" class="">22年（264期）</li>
+                  <li data-val="23" class="">23年（276期）</li>
+                  <li data-val="24" class="">24年（288期）</li>
+                  <li data-val="25" class="">25年（300期）</li>
+                  <li data-val="26" class="">26年（312期）</li>
+                  <li data-val="27" class="">27年（324期）</li>
+                  <li data-val="28" class="">28年（336期）</li>
+                  <li data-val="29" class="">29年（348期）</li>
+                  <li data-val="30" class="activeS">30年（360期）</li>
+                </ul>
+              </section>
+            </div>
+          </div>
+        </div>
+        <!-- 选择利率 -->
+        <section id="ratePage" class="ratePageSec" style="display: none;">
+          <div class="input-rate">
+            <div class="width2">自定义利率：</div>
+            <div class="widthright">
+              <input type="number" min="0" max="10" class="ipt-text" id="lilvDef" oninput="in_rate()" data-val="" value="" placeholder="请输入自定义利率">
+              <span class="gray-8">%</span>
+            </div>
+            <div class="btn-outer">
+              <a href="javascript:;" class="btn" id="btnRateOk">确 定</a>
+            </div>
+          </div>
+          <div class="c-list">
+            <div class="list-t">或者选择常用利率</div>
+            <ul>
+              <li data-val="1" class="on">基准利率</li>
+              <li data-val="0.7" class="">7折</li>
+              <li data-val="0.85" class="">85折</li>
+              <li data-val="0.88" class="">88折</li>
+              <li data-val="0.9" class="">9折</li>
+              <li data-val="0.95" class="">95折</li>
+              <li data-val="1.1" class="">1.1倍</li>
+            </ul>
+          </div>
+        </section>
+        <!-- 还款详情 -->
+        <section class="repay" id="detailPage" style="display: none;">
+          <header class="header" id="newheader" style="position: relative;">
+            <div class="left" onclick="hideDetail()">
+              <a class="back"><i></i></a>
+            </div>
+            <div class="cent">月均还款</div>
+            <div class="clear"></div>
+          </header>
+          <div class="repay-t" id="listInfo">
+            <div class="repay-tab" id="payMethodType">
+              <ul>
+                <li id="pay0" class="cur">等额本息</li>
+                <li id="pay1" class="">等额本金</li>
+              </ul>
+            </div>
+            <ul id="monthPay">
+              <li>月均还款(元)：<span class="f16" id="average_repay"></span></li>
+            </ul>
+            <ul id="detailUl">
+              <!-- 商业贷 公积金贷显示 -->
+              <li>还款总额(万): <span id="average_rtotal"></span></li>
+              <li>贷款总额(万): <span id="average_ltotal"></span></li>
+              <li>支付利息(万): <span id="average_atotal"></span></li>
+              <li>贷款月数(月): <span id="average_month"></span></li>
+              <!-- 组合贷显示 -->
+              <!-- <li>还款总额(万): <span></span></li>
+              <li>贷款总额(万): <span></span></li>
+              <li>支付利息(万): <span></span></li>
+              <li>商业贷款月数(月): <span></span></li>
+              <li>公积金贷款月数(月): <span></span></li> -->
+            </ul>
+          </div>
+          <div class="dataList">
+            <table cellpadding="0" cellspacing="0" class="dataTable">
+              <tbody>
+                <tr>
+                  <th width="13%">月份</th>
+                  <th width="18%">月供</th>
+                  <th width="20%">月供本金</th>
+                  <th width="20%">月供利息</th>
+                  <th width="29%">剩余贷款</th>
+                </tr>
+              </tbody>
+            </table>
+            <!--<div class="year-box" id="yearChange"><span>第1年</span></div>-->
+          </div>
+          <div class="data-box">
+            <div class="dataList" id="listHtml">
+              <table cellpadding="0" cellspacing="0" class="dataTable" id="result_table" style="table-layout:fixed;">
+                <tbody>
+                  <col style="width: 13%" />
+                  <col style="width: 18%" />
+                  <col style="width: 20%" />
+                  <col style="width: 20%" />
+                  <col style="width: 29%" />
+                </tbody>
+                <tr>
+                  <td width="13%"></td>
+                  <td width="18%"></td>
+                  <td width="20%"></td>
+                  <td width="20%"></td>
+                  <td width="29%"></td>
+                </tr>
+              </table>
+              <!--<table cellpadding="0" cellspacing="0" class="dataTable" id="btable" style="table-layout:fixed;">
+									<tbody>
+										<col style="width: 13%" />
+										<col style="width: 18%" />
+										<col style="width: 20%" />
+										<col style="width: 20%" />
+										<col style="width: 29%" />
+									</tbody>
+									<tr>
+										<td width="13%"></td>
+										<td width="18%"></td>
+										<td width="20%"></td>
+										<td width="20%"></td>
+										<td width="29%"></td>
+									</tr>
+								</table>-->
+            </div>
+          </div>
+        </section>
+      </div>
+    </form>
+  </div>
+  <div class="download-box">
+    <div class="left ">
+      <img src="http://img.qufaya.com/www/images/shareApp/floatLayer/floatLogo.png">
+    </div>
+    <div class="center ">
+      <ul>
+        <li>
+          <p>圈子账本</p>
+        </li>
+        <li>
+          <p>一只特立独行的账本</p>
+        </li>
+      </ul>
+    </div>
+    <div class="right ">
+      <a href="http://quanzi.qufaya.com/j/12ta34i">下载APP</a>
+    </div>
+  </div>
+</body>
+
+</html>
